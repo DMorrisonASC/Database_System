@@ -39,15 +39,37 @@ def request_info():
         
         match choice:
             case "1":
-                print("You can become a web developer1111.")
+                player_name = input("Enter player name: ")
+                DOB = input("Enter DOB: ")
+                Batting_hand = input("Enter Batting_hand: ")
+                Bowling_Skill = input("Enter Bowling_Skill: ")
+                Country = input("Enter country: ")
+                query1 = ("""
+                Insert into players (player_Name, DOB, Batting_hand, Bowling_Skill, Country)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """)
+
+                val = (player_name, DOB, Batting_hand, Bowling_Skill, Country)
+
+
+
+
+                
+                cursor.execute(query3, val)
+
+                myResult = cursor.fetchall()
+                for rowNum in range(len(myResult)):
+                    print(myResult[rowNum])
+                print("------------")
+
             case "2":
                 print("You can become a web developer222.")
             case "3":
                 team_name = input("Enter team name: ")
-                query = ("""select * from teamwise_home_and_away where team = (%s) """)
+                query3 = ("""select * from teamwise_home_and_away where team = (%s) """)
                 val = (team_name,)
 
-                cursor.execute(query,val)
+                cursor.execute(query3,val)
 
                 myResult = cursor.fetchall()
                 for rowNum in range(len(myResult)):
@@ -59,11 +81,38 @@ def request_info():
             case "5":
                 print("You can become a web developer.")
             case "6":
-                print("You can become a web developer.")
+                player_name = input("Enter player name: ")
+                query6 = ("""select * from players join most_runs_average_strikerate on players.player_Name = batsman where player_Name = (%s) """)
+                val = (player_name,)
+
+                cursor.execute(query6,val)
+
+                myResult = cursor.fetchall()
+                for rowNum in range(len(myResult)):
+                    print(myResult[rowNum])
+                print("------------")
             case "7":
                 print("You can become a web developer.")
             case "8":
-                print("You can become a web developer.")
+                print('See all matches where a player was earned "player of the match"!')
+                player_name = input("Enter player name: ")
+                # query_playerInfo = ("""select * from players join most_runs_average_strikerate""")
+                query_matches_POG = ("""
+                with player_stats_info(Player_Name, DOB, Batting_Hand, Bowling_Skill, Country, batsman, total_runs_ever, `out`, numberofballs, average, strikerate) as (select * from players join most_runs_average_strikerate on players.player_Name = batsman)
+                select * from matches join 
+                player_stats_info
+                on matches.player_of_match = player_stats_info.player_Name 
+                where player_of_match = (%s) 
+                """)
+                
+                val = (player_name,)
+
+                cursor.execute(query_matches_POG,val)
+
+                myResult = cursor.fetchall()
+                for rowNum in range(len(myResult)):
+                    print(myResult[rowNum])
+                print("------------")
             case _:
                 print("That is not an option.")
 
