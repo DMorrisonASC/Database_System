@@ -40,30 +40,51 @@ def request_info():
         match choice:
             case "1":
                 player_name = input("Enter player name: ")
-                DOB = input("Enter DOB: ")
-                Batting_hand = input("Enter Batting_hand: ")
-                Bowling_Skill = input("Enter Bowling_Skill: ")
-                Country = input("Enter country: ")
-                query1 = ("""
-                Insert into players (player_Name, DOB, Batting_hand, Bowling_Skill, Country)
-                VALUES (%s, %s, %s, %s, %s, %s)
-                """)
+                # Check if records exist already
+                check_records_query=""" SELECT player_Name FROM players WHERE EXISTS(SELECT * FROM players WHERE player_Name = "{}") """
+                cursor.execute(check_records_query.format(player_name))
 
-                val = (player_name, DOB, Batting_hand, Bowling_Skill, Country)
+                rows=cursor.fetchall()
 
+                if (len(rows) == 0):
+                    Batting_hand = input('Enter Batting_hand("Right_Hand" or "Left_Hand"): ')
+                    Bowling_Skill = input('Enter Bowling_Skill("Right_Arm" or "Left_Arm"): ')
+                    Country = input("Enter country: ")
+                    query1 = ("""
+                    Insert into players (player_Name, Batting_hand, Bowling_Skill, Country)
+                    VALUES (%s, %s, %s, %s)
+                    """)
 
+                    val = (player_name, Batting_hand, Bowling_Skill, Country)
+                    
+                    cursor.execute(query1, val)
+                    db.commit()
+            
+                else:
+                    print("record already exists!")
 
-
-                
-                cursor.execute(query3, val)
-
-                myResult = cursor.fetchall()
-                for rowNum in range(len(myResult)):
-                    print(myResult[rowNum])
-                print("------------")
 
             case "2":
-                print("You can become a web developer222.")
+                player_name = input("Enter player name: ")
+                # Check if records exist already
+                check_records_query2 = """ SELECT player_Name FROM players WHERE EXISTS(SELECT * FROM players WHERE player_Name = "{}") """
+                cursor.execute(check_records_query2.format(player_name))
+
+                rows=cursor.fetchall()
+
+                if (len(rows) != 0):
+                    query2 = (""" Delete from players
+                    where player_Name = %s 
+                     """)
+
+                    val = (player_name,)
+                    
+                    cursor.execute(query2, val)
+                    db.commit()
+            
+                else:
+                    print("record does not exists!")
+
             case "3":
                 team_name = input("Enter team name: ")
                 query3 = ("""select * from teamwise_home_and_away where team = (%s) """)
