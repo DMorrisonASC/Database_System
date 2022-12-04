@@ -5,6 +5,7 @@
 # Errors: 1) If string is not exact, results will not show. 
 # Example: the string in option 3 "Deccan Chargers" will work while "Deccan  Chargers" will not work because of extra space.
 import mysql.connector
+from decimal import Decimal
 
 db = mysql.connector.connect(
   host="localhost",
@@ -59,15 +60,17 @@ def request_info():
                     
                     cursor.execute(query1, val)
                     db.commit()
+                    print("------------")
             
                 else:
                     print("record already exists!")
+                    print("------------")
 
 
             case "2":
                 player_name = input("Enter player name: ")
                 # Check if records exist already
-                check_records_query2 = """ SELECT player_Name FROM players WHERE EXISTS(SELECT * FROM players WHERE player_Name = "{}") """
+                check_records_query2 = (""" SELECT player_Name FROM players WHERE EXISTS(SELECT * FROM players WHERE player_Name = "{}") """)
                 cursor.execute(check_records_query2.format(player_name))
 
                 rows=cursor.fetchall()
@@ -81,9 +84,10 @@ def request_info():
                     
                     cursor.execute(query2, val)
                     db.commit()
-            
+                    print("------------")
                 else:
                     print("record does not exists!")
+                    print("------------")
 
             case "3":
                 team_name = input("Enter team name: ")
@@ -98,9 +102,44 @@ def request_info():
                 print("------------")
 
             case "4":
-                print("You can become a web developer.")
+                team_name = input("Enter team name to insert: ")
+                check_records_query4 = (""" SELECT team FROM teams WHERE EXISTS(SELECT * FROM teams WHERE team = "{}") """)
+                cursor.execute(check_records_query4.format(team_name))
+
+                rows=cursor.fetchall()
+
+                if (len(rows) == 0):
+                    # create values
+                    year_created = int(input("Enter year team was created: "))
+                    home_wins = Decimal(input("Enter home wins: "))
+                    away_wins = Decimal(input("Enter away wins: "))
+                    home_matches = Decimal(input("Enter home matches played: "))
+                    away_matches = Decimal(input("Enter away matches played: "))
+                    home_win_percentage = home_wins / home_matches
+                    away_win_percentage =  away_wins / away_matches
+                    # Create queries
+                    insert_team_query = """Insert into teams (team, year_created)
+                    values (%s, %s)
+                    """
+                    insert_teamwise = ("""Insert into teamwise_home_and_away 
+                    (team, home_wins, away_wins, home_matches, away_matches, home_win_percentage, away_win_percentage)
+                    values (%s, %s, %s, %s, %s, %s, %s)
+                    """)
+                    values_team = (team_name, year_created)
+                    values_teamwise = (team_name, home_wins, away_wins, home_matches, away_matches, home_win_percentage, away_win_percentage)
+                    # Insert into db
+                    cursor.execute(insert_team_query, values_team)
+                    cursor.execute(insert_teamwise, values_teamwise)
+
+                    db.commit()
+                    print("------------")  
+
+                else:
+                    print("Records of the team already exists!")
+
             case "5":
                 print("You can become a web developer.")
+                print("------------")
             case "6":
                 player_name = input("Enter player name: ")
                 query6 = ("""select * from players join most_runs_average_strikerate on players.player_Name = batsman where player_Name = (%s) """)
@@ -112,9 +151,8 @@ def request_info():
                 for rowNum in range(len(myResult)):
                     print(myResult[rowNum])
                 print("------------")
+
             case "7":
-                print("You can become a web developer.")
-            case "8":
                 print('See all matches where a player was earned "player of the match"!')
                 player_name = input("Enter player name: ")
                 # query_playerInfo = ("""select * from players join most_runs_average_strikerate""")
@@ -134,6 +172,9 @@ def request_info():
                 for rowNum in range(len(myResult)):
                     print(myResult[rowNum])
                 print("------------")
+            case "8":
+                print("Exiting program...")
+
             case _:
                 print("That is not an option.")
 
