@@ -198,6 +198,7 @@ def request_info():
                 print("------------")
             case "8":
                 print("Exiting program...")
+                keepGoing = False
 
             case _:
                 print("That is not an option.")
@@ -205,5 +206,8 @@ def request_info():
 
 def main():
     request_info()
+    # Close connections
+    cursor.close()
+    db.close()
 
 main()
