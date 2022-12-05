@@ -138,8 +138,32 @@ def request_info():
                     print("Records of the team already exists!")
 
             case "5":
-                print("You can become a web developer.")
-                print("------------")
+                team_name = input("Enter team name to delete: ")
+                # Check if records exist already
+                check_records_query5 = (""" SELECT team FROM teams WHERE EXISTS(SELECT * FROM teams WHERE team = "{}") """)
+                cursor.execute(check_records_query5.format(team_name))
+
+                rows=cursor.fetchall()
+
+                if (len(rows) != 0):
+                    delete_team = (""" Delete from teams
+                    where team = %s 
+                     """)
+                    delete_teamwise = (""" Delete from teamwise_home_and_away
+                    where team = %s 
+                     """)
+
+                    val_delete = (team_name,)
+                    
+                    cursor.execute(delete_teamwise, val_delete)
+                    cursor.execute(delete_team, val_delete)
+                    db.commit()
+                    print("------------")
+                else:
+                    print("record does not exists!")
+                    print("------------")
+
+                
             case "6":
                 player_name = input("Enter player name: ")
                 query6 = ("""select * from players join most_runs_average_strikerate on players.player_Name = batsman where player_Name = (%s) """)
@@ -177,11 +201,6 @@ def request_info():
 
             case _:
                 print("That is not an option.")
-
-
-
-
-
 
 
 def main():
