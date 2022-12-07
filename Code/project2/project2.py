@@ -97,8 +97,18 @@ def request_info():
                 cursor.execute(query3,val)
 
                 myResult = cursor.fetchall()
-                for rowNum in range(len(myResult)):
-                    print(myResult[rowNum])
+                team_stats = """The {0} have :
+home wins: {1}
+away wins: {2}
+home matches: {3}
+away matches: {4}
+home win percentage: {5}
+away win percentage: {6}
+"""
+                print(team_stats.format(myResult[0][0], myResult[0][1], myResult[0][2], myResult[0][3], myResult[0][4], myResult[0][5], myResult[0][6]))
+
+                # for rowNum in range(len(myResult)):
+                #     print(myResult[0])
                 print("------------")
 
             case "4":
@@ -172,8 +182,25 @@ def request_info():
                 cursor.execute(query6,val)
 
                 myResult = cursor.fetchall()
-                for rowNum in range(len(myResult)):
-                    print(myResult[rowNum])
+
+                stats_Info_player = """{0}'s stats:\
+Total runs in career: {6}
+Dismissaled/Outted : {7}
+Number of balls hit: {8}
+Average: {9}
+Strike rate: {10} 
+--Back ground Info--
+DOB: {1}
+Batting hand: {2}
+Bowling skill: {3}
+Country: {4}       
+                """
+                print(stats_Info_player.format(myResult[0][0], myResult[0][1], 
+                myResult[0][2], myResult[0][3], myResult[0][4], myResult[0][5], 
+                myResult[0][6], myResult[0][7], myResult[0][8], 
+                myResult[0][9], myResult[0][10]
+                ))
+                
                 print("------------")
 
             case "7":
@@ -192,9 +219,21 @@ def request_info():
 
                 cursor.execute(query_matches_POG,val)
 
+
                 myResult = cursor.fetchall()
+
+                POG_player = 'Matches where "{0}" was player of the match:'
+
+                print(POG_player.format(player_name))
+                
                 for rowNum in range(len(myResult)):
-                    print(myResult[rowNum])
+                    print()
+                    print("Match ID: " , myResult[rowNum][0])
+                    print("Season: " , myResult[rowNum][1])
+                    print("City: " , myResult[rowNum][2])
+                    print("Date: " , myResult[rowNum][3])
+                    print(myResult[rowNum][4], " VS ", myResult[rowNum][5])
+                    print("Winning team: ", myResult[rowNum][10] )
                 print("------------")
             case "8":
                 print("Exiting program...")
@@ -202,7 +241,6 @@ def request_info():
 
             case _:
                 print("That is not an option.")
-
 
 def main():
     request_info()
