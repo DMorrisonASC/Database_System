@@ -4,6 +4,7 @@
 # Description: Project 2
 # Errors: 1) If string is not exact, results will not show. 
 # Example: the string in option 3 "Deccan Chargers" will work while "Deccan  Chargers" will not work because of extra space.
+# 2) Users can in
 import mysql.connector
 from decimal import Decimal
 
@@ -237,7 +238,7 @@ Country: {4}
             case "8":
                 print("Exiting program...")
                 keepGoing = False
-
+            # Default case when input is not 1-8
             case _:
                 print("That is not an option.")
 
@@ -246,5 +247,4 @@ def main():
     # Close connections
     cursor.close()
     db.close()
-
 main()
