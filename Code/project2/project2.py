@@ -24,24 +24,24 @@ def request_info():
     print("Welcome to the Indian Cricket League database!")
     print("-------------------------------------")
     print("Select an option:")
-    print("1) One option to insert data that interacts with at least one table")
-    print("2) One option to delete data that interacts with at least one table")
-    print("3) One option to output data that interacts with at least one table")
-    print("4) One option to insert data that interacts with at least two tables")
-    print("5) One option to delete data that interacts with at least two tables")
-    print("6) One option to output data that interacts with at least two tables")
-    print("7) One option to output data that interacts with three or more tables")
-    print("8) Exit the program. (One option should be to exit the program)")
+    print("1) Insert a player.")
+    print("2) Delete a player.")
+    print("3) See team statistics(Wins, losses, etc.")
+    print("4) Create a team.")
+    print("5) Delete a team.")
+    print("6) See player statistics and background.")
+    print('7) See all matches where player earned "player of the match" title.')
+    print("8) Exit the program.")
 
     while (keepGoing == True):
         print("Welcome to the Indian Cricket League! a Note that")
         text = input("Choose any options from 1-8: ")
         choice  = text.strip()
-        
         match choice:
+            # 1) One option to insert data that interacts with at least one table
             case "1":
                 player_name = input("Enter player name: ")
-                # Check if records exist already
+                # Check if records exist already. If exists print records, if not inform user that player doesn't exist
                 check_records_query=""" SELECT player_Name FROM players WHERE EXISTS(SELECT * FROM players WHERE player_Name = "{}") """
                 cursor.execute(check_records_query.format(player_name))
 
@@ -63,13 +63,13 @@ def request_info():
                     print("------------")
             
                 else:
-                    print("record already exists!")
+                    print("Record already exists!")
                     print("------------")
 
-
+            # 2) One option to delete data that interacts with at least one table
             case "2":
                 player_name = input("Enter player name: ")
-                # Check if records exist already
+                # Check if records exist already. If exists print records, if not inform user that player doesn't exist
                 check_records_query2 = (""" SELECT player_Name FROM players WHERE EXISTS(SELECT * FROM players WHERE player_Name = "{}") """)
                 cursor.execute(check_records_query2.format(player_name))
 
@@ -86,9 +86,9 @@ def request_info():
                     db.commit()
                     print("------------")
                 else:
-                    print("record does not exists!")
+                    print("Record does not exists!")
                     print("------------")
-
+            # 3) One option to output data that interacts with at least one table
             case "3":
                 team_name = input("Enter team name: ")
                 query3 = ("""select * from teamwise_home_and_away where team = (%s) """)
@@ -106,11 +106,8 @@ home win percentage: {5}
 away win percentage: {6}
 """
                 print(team_stats.format(myResult[0][0], myResult[0][1], myResult[0][2], myResult[0][3], myResult[0][4], myResult[0][5], myResult[0][6]))
-
-                # for rowNum in range(len(myResult)):
-                #     print(myResult[0])
                 print("------------")
-
+            # 4) One option to insert data that interacts with at least two tables
             case "4":
                 team_name = input("Enter team name to insert: ")
                 check_records_query4 = (""" SELECT team FROM teams WHERE EXISTS(SELECT * FROM teams WHERE team = "{}") """)
@@ -146,16 +143,17 @@ away win percentage: {6}
 
                 else:
                     print("Records of the team already exists!")
-
+            # 5) One option to delete data that interacts with at least two tables
             case "5":
                 team_name = input("Enter team name to delete: ")
-                # Check if records exist already
+                # Check if records exist already. If exists print records, if not inform user that player doesn't exist
                 check_records_query5 = (""" SELECT team FROM teams WHERE EXISTS(SELECT * FROM teams WHERE team = "{}") """)
                 cursor.execute(check_records_query5.format(team_name))
 
                 rows=cursor.fetchall()
 
                 if (len(rows) != 0):
+                    # Create queries
                     delete_team = (""" Delete from teams
                     where team = %s 
                      """)
@@ -164,21 +162,22 @@ away win percentage: {6}
                      """)
 
                     val_delete = (team_name,)
-                    
+                    # Execute queries
                     cursor.execute(delete_teamwise, val_delete)
                     cursor.execute(delete_team, val_delete)
                     db.commit()
                     print("------------")
                 else:
-                    print("record does not exists!")
+                    print("Record does not exists!")
                     print("------------")
 
-                
+            # 6) One option to output data that interacts with at least two tables   
             case "6":
                 player_name = input("Enter player name: ")
+                # Create queries 
                 query6 = ("""select * from players join most_runs_average_strikerate on players.player_Name = batsman where player_Name = (%s) """)
                 val = (player_name,)
-
+                # Execute and fetch results
                 cursor.execute(query6,val)
 
                 myResult = cursor.fetchall()
@@ -202,11 +201,11 @@ Country: {4}
                 ))
                 
                 print("------------")
-
+            # 7) One option to output data that interacts with three or more tables
             case "7":
                 print('See all matches where a player was earned "player of the match"!')
                 player_name = input("Enter player name: ")
-                # query_playerInfo = ("""select * from players join most_runs_average_strikerate""")
+                # Create queries
                 query_matches_POG = ("""
                 with player_stats_info(Player_Name, DOB, Batting_Hand, Bowling_Skill, Country, batsman, total_runs_ever, `out`, numberofballs, average, strikerate) as (select * from players join most_runs_average_strikerate on players.player_Name = batsman)
                 select * from matches join 
@@ -216,10 +215,9 @@ Country: {4}
                 """)
                 
                 val = (player_name,)
-
+                # execute queries and fetch results from database
                 cursor.execute(query_matches_POG,val)
-
-
+                
                 myResult = cursor.fetchall()
 
                 POG_player = 'Matches where "{0}" was player of the match:'
@@ -235,6 +233,7 @@ Country: {4}
                     print(myResult[rowNum][4], " VS ", myResult[rowNum][5])
                     print("Winning team: ", myResult[rowNum][10] )
                 print("------------")
+            # 8) Exit the program. (One option should be to exit the program)
             case "8":
                 print("Exiting program...")
                 keepGoing = False
